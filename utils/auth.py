@@ -15,13 +15,21 @@ class AuthManager:
         self.users = self._load_users()
     
     def _load_users(self) -> Dict:
-        """Load user configurations from JSON file"""
+        """Load user configurations from Streamlit secrets or JSON file"""
+        try:
+            # Try Streamlit secrets first (for cloud deployment)
+            if hasattr(st, 'secrets') and 'users' in st.secrets:
+                return dict(st.secrets['users'])
+        except Exception:
+            pass
+        
+        # Fallback to JSON file (for local development)
         try:
             with open(self.users_config_path, 'r') as f:
                 config = json.load(f)
                 return config.get('users', {})
         except FileNotFoundError:
-            st.error(f"Users configuration file not found: {self.users_config_path}")
+            st.error(f"Users configuration not found")
             return {}
         except json.JSONDecodeError:
             st.error("Invalid JSON in users configuration file")
