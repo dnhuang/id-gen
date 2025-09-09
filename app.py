@@ -13,15 +13,9 @@ from utils.file_parser import FileParser
 from utils.name_processor import NameProcessor
 from utils.hash_generator import HashGenerator
 from utils.export_manager import ExportManager
+from utils.auth import AuthManager
 from config import *
 
-# Configure Streamlit page
-st.set_page_config(
-    page_title="ID Generator",
-    page_icon="🔑",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 # Initialize session state variables
 if 'step' not in st.session_state:
@@ -37,14 +31,38 @@ if 'name_id_mappings' not in st.session_state:
 def main():
     """Main application function"""
     
+    # Initialize authentication manager
+    auth_manager = AuthManager()
+    
+    # Check if user is logged in
+    if not auth_manager.is_logged_in():
+        auth_manager.show_login_page()
+        return
+    
+    # User is logged in, show the main app
+    # Configure page for logged-in users
+    st.set_page_config(
+        page_title="ID Generator",
+        page_icon="🔑",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+    
     # Initialize utility classes
     file_parser = FileParser()
     name_processor = NameProcessor()
     hash_generator = HashGenerator()
     export_manager = ExportManager()
     
-    # Application header
-    st.title("ID Generator")
+    # Application header with logout button at top right
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("ID Generator")
+    with col2:
+        if st.button("Logout", key="top_logout"):
+            auth_manager.logout_user()
+            st.rerun()
+        st.write(f"**User:** {auth_manager.get_current_user()}")
     
     st.markdown("---")
     
@@ -394,9 +412,10 @@ def step_3_download_results(export_manager: ExportManager):
             st.rerun()
     with col2:
         if st.button("Start Over 🔄", width="stretch"):
-            # Clear session state
+            # Clear application state but preserve authentication
+            keys_to_preserve = ['authenticated', 'username', 'user_role']
             for key in list(st.session_state.keys()):
-                if key != 'step':
+                if key not in keys_to_preserve:
                     del st.session_state[key]
             st.session_state.step = 1
             st.rerun()
