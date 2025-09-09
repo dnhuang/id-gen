@@ -5,13 +5,13 @@ Hash generation utilities for creating unique IDs from names
 import hashlib
 from typing import List, Dict, Optional
 import uuid
-from config import HASH_ALGORITHM, SALT_ENABLED, DEFAULT_SALT
+from config import HASH_ALGORITHM
 
 
 class HashGenerator:
     """Generates MD5 hashes and other unique identifiers for names"""
     
-    def __init__(self, algorithm: str = HASH_ALGORITHM, salt: str = DEFAULT_SALT):
+    def __init__(self, algorithm: str = HASH_ALGORITHM, salt: str = ""):
         self.algorithm = algorithm
         self.salt = salt
         self.hash_cache = {}  # Cache to ensure consistent hashing
@@ -33,8 +33,8 @@ class HashGenerator:
         # Prepare the string to hash
         hash_input = name.strip().lower()
         
-        # Add salt if enabled
-        if SALT_ENABLED and self.salt:
+        # Add salt if provided
+        if self.salt:
             hash_input = f"{self.salt}{hash_input}"
         
         # Generate hash

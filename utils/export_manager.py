@@ -5,7 +5,7 @@ Export utilities for generating CSV and XLSX files
 import pandas as pd
 import io
 from typing import List, Dict, Optional
-from config import EXCEL_SHEET_NAME, CSV_DELIMITER, NAME_COLUMN, ID_COLUMN
+from config import CSV_DELIMITER, NAME_COLUMN, ID_COLUMN
 
 
 class ExportManager:
