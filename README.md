@@ -41,7 +41,6 @@ id-gen/
 ├── app.py                    # Main application
 ├── config.py                # Configuration settings
 ├── requirements.txt          # Dependencies
-├── users_config.json         # User credentials
 ├── utils/                    # Core modules
 │   ├── auth.py              # Authentication
 │   ├── file_parser.py       # File processing
